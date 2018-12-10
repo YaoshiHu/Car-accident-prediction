@@ -3,6 +3,7 @@ from ttk import *
 from PIL import Image, ImageTk
 import imageio
 import threading
+import sys, os
 
 class Window(Frame):
     def __init__(self, master=None):
@@ -10,38 +11,42 @@ class Window(Frame):
         self.master = master
         self.init_window()
 
-    #Creation of init_window
     def init_window(self):
-        # changing the title of our master widget      
         self.master.title("DL Demo")
-        # allowing the widget to take the full space of the root window
-        self.pack(fill=BOTH, expand=1)
+        self.pack(fill=BOTH, expand=True)
 
         # creating a menu instance
         menu = Menu(self.master)
         self.master.config(menu=menu)
-        # create the file object)
-        file = Menu(menu)
 
+        file = Menu(menu)
         file.add_command(label="Play", command=self.show_video)
         file.add_command(label="Exit", command=self.client_exit)
-        #added "file" to our menu
         menu.add_cascade(label="File", menu=file)
-        # create the file object)
-        # play = Menu(menu)
-        # # adds a command to the menu option, calling it exit, and the
-        # # command it runs on event is client_exit
-        # play.
-        # #added "file" to our menu
-        # menu.add_cascade(label="play", menu=play)
 
-        self.dropdown = self.set_dropdown(range(1, 11), position=[0, 0])
+        # first frame with dropdown and play botton
+        self.frame1 = Frame(self)
+        self.frame1.pack(fill=X)
 
-        exit_button = Button(self, text="quit", command=self.client_exit)
-        exit_button.grid(row=2, column=0)
+        video_text = Label(self.frame1, text="Select video # ")
+        video_text.pack(side=LEFT, padx=5, pady=5)
+
+        self.dropdown = self.set_dropdown(range(1, 11), LEFT)
+
+        play_button = Button(self.frame1, text="play", command=self.show_video)
+        play_button.pack(side=LEFT, padx=5, pady=5)
+
+        exit_button = Button(self.frame1, text="quit", command=self.client_exit)
+        exit_button.pack(side=LEFT, padx=5, pady=5)
+
+        # frame2 is used fo the video
+        self.frame2 = Frame(self)
+        self.frame2.pack(fill=X)
 
 
     def show_video(self):
+        video_dir = "data/"
+
         def stream(label):
             label.config(image='')
 
@@ -62,14 +67,14 @@ class Window(Frame):
         else:
             video_name = "0440.mp4"
 
+        video_name = os.path.join(video_dir, video_name)
+
         print("playing video {}".format(video_name))
 
         video = imageio.get_reader(video_name)
 
-        video_label = Label(self)
-        # video_label.grid(row=2, column=0)
-        # video_label.place(x=20, y=20)
-        video_label.pack()
+        video_label = Label(self.frame2)
+        video_label.pack(side=TOP, padx=5, pady=5)
         thread = threading.Thread(target=stream, args=(video_label,))
         thread.daemon = 1
         thread.start()
@@ -81,12 +86,12 @@ class Window(Frame):
             newLen = len(dropdown.get())
             dropdown.configure(width=newLen+2)
 
-        dropdown = Combobox(self, width=3,
+        dropdown = Combobox(self.frame1, width=3,
             value=video_list,
             postcommand=resizeFunc)
 
         dropdown.current(0)
-        dropdown.grid(row=position[0], column=position[1])
+        dropdown.pack(side=position, padx=5, pady=5)
         return dropdown
 
 

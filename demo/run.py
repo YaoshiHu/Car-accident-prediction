@@ -1,3 +1,4 @@
+#!/usr/bin/python
 from Tkinter import *
 from ttk import *
 from window_class import Window
