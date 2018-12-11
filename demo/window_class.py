@@ -7,6 +7,7 @@ import sys, os, time
 import numpy as np
 
 video_size = (950, 420)
+cur_dir = os.path.dirname(os.path.realpath(__file__))
 
 class Window(Frame):
     def __init__(self, master=None):
@@ -20,7 +21,7 @@ class Window(Frame):
         self.master.title("DL Demo")
         self.pack(fill=BOTH, expand=True)
 
-        result_file = np.load(os.path.join("data", "prediction.npz"))
+        result_file = np.load(os.path.join(cur_dir, "data", "prediction.npz"))
         self.scores = result_file["data"]
         print("npz file loaded")
 
@@ -31,7 +32,7 @@ class Window(Frame):
         file = Menu(menu)
         file.add_command(label="Play", command=self.play_video)
         file.add_command(label="Exit", command=self.client_exit)
-        menu.add_cascade(label="File", menu=file)
+        menu.add_cascade(label="Control", menu=file)
 
         self.title_frame = Frame(self)
         self.title_frame.pack(side=TOP)
@@ -41,51 +42,61 @@ class Window(Frame):
 
         self.group_member = Frame(self)
         self.group_member.pack(side=TOP)
+
+        self.button_frame = Frame(self)
+        self.button_frame.pack(side=TOP)
+
+        # frame2 is used for result
+        self.result_frame = Frame(self)
+        self.result_frame.pack(fill=X)
+
+        self.video_frame = Frame(self)
+        self.video_frame.pack(fill=X)
+
+        self.summary_frame = Frame(self)
+        self.summary_frame.pack(fill=X)
+
+        self.set_group_frame()
+        self.set_button_frame()
+        self.set_result_frame()
+        self.set_video_frame()
+        self.set_summary_frame()
+        
+    def set_group_frame(self):
         group_panel = Label(self.group_member, text="Yimeng Lei (yl3747), Yinan Wang (yw2924), Yaoshi Hu (yh2950)")
         group_panel.config(font=("Times New Roman", 30))
         group_panel.pack(fill=BOTH, expand=True)
 
-        # first frame with dropdown and play botton
-        self.frame1 = Frame(self)
-        self.frame1.pack(side=TOP)
+    def set_button_frame(self):
+        video_text = Label(self.button_frame, text="Select video #")
+        video_text.pack(side=LEFT, padx=2, pady=10)
 
-        # frame2 is used fo result
-        self.frame2 = Frame(self)
-        self.frame2.pack(fill=X)
+        self.dropdown = self.set_dropdown(self.button_frame, range(1, 11), LEFT)
 
-        # frame3 is used for the video and ploting
-        self.frame3 = Frame(self)
-        self.frame3.pack(fill=X)
+        play_button = Button(self.button_frame, text="play", command=self.play_video)
+        play_button.pack(side=LEFT, padx=5, pady=20)
 
-        self.project_abstract = Frame(self)
-        self.project_abstract.pack(fill=X)
+        exit_button = Button(self.button_frame, text="exit", command=self.client_exit, style='green/red.TLabel')
+        exit_button.pack(side=LEFT, padx=5, pady=20)
 
+    def set_result_frame(self):
         label_text = "GCN-AdaLEU: Average precision: 0.9457, Recall=80%, Time to accident: 1.368"
-        summary_label = Label(self.frame2, text=label_text)
+        summary_label = Label(self.result_frame, text=label_text)
         summary_label.config(font=("Times New Roman", 30))
         summary_label.pack(side=TOP, padx=10, pady=10)
 
-        self.video_label = Label(self.frame3)
+    def set_video_frame(self):
+        self.video_label = Label(self.video_frame)
         self.video_label.pack(side=LEFT, padx=10, pady=30)
 
-        self.score_label = Label(self.frame3)
+        self.score_label = Label(self.video_frame)
         self.score_label.pack(side=RIGHT, padx=10, pady=30)
 
-        video_text = Label(self.frame1, text="Select video #")
-        video_text.pack(side=LEFT, padx=2, pady=10)
-
-        self.dropdown = self.set_dropdown(self.frame1, range(1, 11), LEFT)
-
-        play_button = Button(self.frame1, text="play", command=self.play_video)
-        play_button.pack(side=LEFT, padx=5, pady=20)
-
-        exit_button = Button(self.frame1, text="exit", command=self.client_exit, style='green/red.TLabel')
-        exit_button.pack(side=LEFT, padx=5, pady=20)
-
+    def set_summary_frame(self):
         abstract = "Project summarny: "
 
         # the width is defined in text unit
-        project_summary = Label(self.project_abstract, text=abstract, width=50)
+        project_summary = Label(self.summary_frame, text=abstract, width=50)
         project_summary.config(font=("Times New Roman", 20))
         project_summary.pack(side=TOP, padx=10, pady=20)
 
@@ -103,7 +114,7 @@ class Window(Frame):
                     video_label.image = frame_image
 
                     if index < 90:
-                        img = os.path.join(score_dir, "000{}.jpg".format(index)[-8:])
+                        img = os.path.join(cur_dir, score_dir, "000{}.jpg".format(index)[-8:])
                         read_score_image = Image.open(img)
                         score_image = ImageTk.PhotoImage(read_score_image)
                         score_label.config(image=score_image)
@@ -114,8 +125,8 @@ class Window(Frame):
                 print("Quit unexpectedly")
 
         video_id = "{}.mp4".format(self.dropdown.get())
-        video_name = os.path.join(video_dir, "videos", video_id)
-        score_dir = os.path.join("data/scores", self.dropdown.get())
+        video_name = os.path.join(cur_dir, video_dir, "videos", video_id)
+        score_dir = os.path.join(cur_dir, "data/scores", self.dropdown.get())
 
         print("playing video {}".format(video_name))
 
