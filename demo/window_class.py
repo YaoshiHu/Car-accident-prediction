@@ -93,10 +93,15 @@ class Window(Frame):
         self.score_label.pack(side=RIGHT, padx=10, pady=30)
 
     def set_summary_frame(self):
-        abstract = "Project summarny: "
+        abstract = '''
+        Problem: Predicting whether car accident could happen inthe near future given video recorded by Dash-Cam.
+        Our contributions:
+        1. Collected a complex car collision datasetwhich could be used at first view car accidentanticipation.
+        2. Verified the feature extracted from MaskR-CNN is effective in anticipating car accident.
+        3. Proposed a mechanism of fusing graph mapwith object feature.'''
 
         # the width is defined in text unit
-        project_summary = Label(self.summary_frame, text=abstract, width=50)
+        project_summary = Label(self.summary_frame, text=abstract)
         project_summary.config(font=("Times New Roman", 20))
         project_summary.pack(side=TOP, padx=10, pady=20)
 
