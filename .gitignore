@@ -1,3 +1,9 @@
 data/
 *.pyc
 venv/
+*.tar*
+test*
+*.png
+*.pdf
+*.ppt*
+baposter/
