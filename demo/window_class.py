@@ -18,7 +18,6 @@ class Window(Frame):
 
         result_file = np.load(os.path.join("data", "prediction.npz"))
         self.scores = result_file["data"]
-        self.labels = result_file["label"]
         print("npz file loaded")
 
         # creating a menu instance

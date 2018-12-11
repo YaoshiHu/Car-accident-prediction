@@ -4,7 +4,6 @@ import os
 
 score_data = np.load("data/prediction.npz")
 predict_scores = score_data["data"]
-label = score_data["label"]
 
 save_dir = "data/scores"
 
