@@ -7,3 +7,4 @@ test*
 *.pdf
 *.ppt*
 baposter/
+*plot.py
