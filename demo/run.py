@@ -10,4 +10,4 @@ if __name__ == "__main__":
     root.geometry("2000x1750")
 
     app = Window(root)
-    root.mainloop()  
+    root.mainloop()

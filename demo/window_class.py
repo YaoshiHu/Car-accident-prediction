@@ -6,11 +6,15 @@ import threading
 import sys, os, time
 import numpy as np
 
+video_size = (950, 420)
+
 class Window(Frame):
     def __init__(self, master=None):
-        Frame.__init__(self, master)                 
+        Frame.__init__(self, master)
         self.master = master
         self.init_window()
+
+        Style().configure('green/red.TLabel', foreground='red')
 
     def init_window(self):
         self.master.title("DL Demo")
@@ -45,41 +49,43 @@ class Window(Frame):
         self.frame1 = Frame(self)
         self.frame1.pack(side=TOP)
 
-        # frame2 is used fo the video
+        # frame2 is used fo result
         self.frame2 = Frame(self)
         self.frame2.pack(fill=X)
 
-        # frame3 is used for the prediction plotting
+        # frame3 is used for the video and ploting
         self.frame3 = Frame(self)
         self.frame3.pack(fill=X)
 
         self.project_abstract = Frame(self)
         self.project_abstract.pack(fill=X)
 
-        summary_label = Label(self.frame2, text="Precision=100%")
-        summary_label.config(font=("Times New Roman", 36))
-        summary_label.pack(side=TOP, padx=10, pady=20)
+        label_text = "GCN-AdaLEU: Average precision: 0.9457, Recall=80%, Time to accident: 1.368"
+        summary_label = Label(self.frame2, text=label_text)
+        summary_label.config(font=("Times New Roman", 30))
+        summary_label.pack(side=TOP, padx=10, pady=10)
 
         self.video_label = Label(self.frame3)
-        self.video_label.pack(side=LEFT, padx=10, pady=40)
+        self.video_label.pack(side=LEFT, padx=10, pady=30)
 
         self.score_label = Label(self.frame3)
-        self.score_label.pack(side=RIGHT, padx=10, pady=40)
+        self.score_label.pack(side=RIGHT, padx=10, pady=30)
 
-        video_text = Label(self.frame1, text="Select video # ")
-        video_text.pack(side=LEFT, padx=5, pady=10)
+        video_text = Label(self.frame1, text="Select video #")
+        video_text.pack(side=LEFT, padx=2, pady=10)
 
         self.dropdown = self.set_dropdown(self.frame1, range(1, 11), LEFT)
 
         play_button = Button(self.frame1, text="play", command=self.play_video)
         play_button.pack(side=LEFT, padx=5, pady=20)
 
-        exit_button = Button(self.frame1, text="quit", command=self.client_exit)
+        exit_button = Button(self.frame1, text="exit", command=self.client_exit, style='green/red.TLabel')
         exit_button.pack(side=LEFT, padx=5, pady=20)
 
-        abstract = "THE BEST PROJECT!"
+        abstract = "Project summarny: "
 
-        project_summary = Label(self.project_abstract, text=abstract)
+        # the width is defined in text unit
+        project_summary = Label(self.project_abstract, text=abstract, width=50)
         project_summary.config(font=("Times New Roman", 20))
         project_summary.pack(side=TOP, padx=10, pady=20)
 
@@ -92,13 +98,14 @@ class Window(Frame):
             try:
                 index = 0
                 for image in video.iter_data():
-                    frame_image = ImageTk.PhotoImage(Image.fromarray(image).resize((950, 420)))
+                    frame_image = ImageTk.PhotoImage(Image.fromarray(image).resize(video_size))
                     video_label.config(image=frame_image)
                     video_label.image = frame_image
 
                     if index < 90:
                         img = os.path.join(score_dir, "000{}.jpg".format(index)[-8:])
-                        score_image = ImageTk.PhotoImage(Image.open(img))
+                        read_score_image = Image.open(img)
+                        score_image = ImageTk.PhotoImage(read_score_image)
                         score_label.config(image=score_image)
                         score_label.image = score_image
 
@@ -122,14 +129,14 @@ class Window(Frame):
 
         def resizeFunc():
             newLen = len(dropdown.get())
-            dropdown.configure(width=newLen+2)
+            dropdown.configure(width=newLen+1)
 
-        dropdown = Combobox(frame, width=3,
+        dropdown = Combobox(frame, width=2,
             value=video_list,
             postcommand=resizeFunc)
 
         dropdown.current(0)
-        dropdown.pack(side=position, padx=5, pady=20)
+        dropdown.pack(side=position, padx=2, pady=20)
         return dropdown
 
     def client_exit(self):
