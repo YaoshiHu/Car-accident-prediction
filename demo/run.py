@@ -7,8 +7,7 @@ from window_class import Window
 # you can later have windows within windows.
 if __name__ == "__main__":
     root = Tk()
-    #size of the window
-    root.geometry("1300x750")
+    root.geometry("2000x1750")
 
     app = Window(root)
     root.mainloop()  
