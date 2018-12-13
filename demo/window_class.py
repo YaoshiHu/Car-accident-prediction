@@ -7,6 +7,7 @@ import sys, os, time
 import numpy as np
 
 video_size = (950, 420)
+plot_size = (600, 420)
 cur_dir = os.path.dirname(os.path.realpath(__file__))
 
 class Window(Frame):
@@ -120,7 +121,7 @@ class Window(Frame):
 
                     if index < 90:
                         img = os.path.join(cur_dir, score_dir, "000{}.jpg".format(index)[-8:])
-                        read_score_image = Image.open(img)
+                        read_score_image = Image.open(img).resize(plot_size)
                         score_image = ImageTk.PhotoImage(read_score_image)
                         score_label.config(image=score_image)
                         score_label.image = score_image
